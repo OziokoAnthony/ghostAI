@@ -55,12 +55,28 @@ export default async function ProjectPage({ params }: Params) {
     : project.collaborators.find((c) => c.userId === user.id)?.role;
   const readOnly = myRole === "VIEWER";
 
+  const missingIntegrations: string[] = [];
+  if (!process.env.NEXT_PUBLIC_LIVEBLOCKS_PUBLIC_KEY)
+    missingIntegrations.push("Liveblocks (presence disabled)");
+  if (!process.env.OPENAI_API_KEY)
+    missingIntegrations.push("OpenAI (using local template AI)");
+  if (!process.env.TRIGGER_SECRET_KEY)
+    missingIntegrations.push("Trigger.dev (AI jobs run inline)");
+  if (!process.env.BLOB_READ_WRITE_TOKEN)
+    missingIntegrations.push("Vercel Blob (snapshots stored inline)");
+
   return (
     <main className="min-h-screen p-8">
       <div className="mx-auto max-w-6xl">
         <h1 className="text-2xl font-bold">{project.name}</h1>
         {project.description && (
           <p className="mt-2 text-gray-600">{project.description}</p>
+        )}
+        {missingIntegrations.length > 0 && (
+          <div className="mt-4 rounded-md border border-amber-300 bg-amber-50 p-3 text-xs text-amber-800">
+            <strong>Degraded mode:</strong>{" "}
+            {missingIntegrations.join(" · ")}
+          </div>
         )}
         <div className="mt-6">
           <PresenceLayer roomId={`project-${project.id}`} name={user.name ?? user.email}>

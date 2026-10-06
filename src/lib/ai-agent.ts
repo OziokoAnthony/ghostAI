@@ -33,7 +33,7 @@ export async function runWithOpenAI(
         content:
           `You are a system design assistant for a collaborative canvas. ` +
           `Current canvas JSON: ${JSON.stringify(current)}. ` +
-          `Respond with JSON only: {"reply": string, "add": [{"kind": one of ${KINDS.join("|")}, "label": string, "connectFromLabel"?: string}]}`,
+          `Respond with JSON only: {"reply": string, "add": [{"kind": one of ${KINDS.join("|")}, "label": string, "connectFromLabel"?: string}], "remove": [string label substrings to delete], "connect": [{"from": string label substring, "to": string label substring}]}`,
       },
       { role: "user", content: message },
     ],
@@ -43,6 +43,8 @@ export async function runWithOpenAI(
   const parsed = JSON.parse(text) as {
     reply?: string;
     add?: { kind: ShapeKind; label: string; connectFromLabel?: string }[];
+    remove?: string[];
+    connect?: { from: string; to: string }[];
   };
 
   const nodes: ReturnType<typeof createNode>[] = [];
@@ -61,16 +63,91 @@ export async function runWithOpenAI(
       edges.push({ id: nextId("e"), source: from.id, target: node.id });
   }
 
+  const removeNodeIds: string[] = [];
+  const removeEdgeIds: string[] = [];
+  for (const rm of parsed.remove ?? []) {
+    const node = current.nodes.find((n) =>
+      n.data.label.toLowerCase().includes(String(rm).toLowerCase())
+    );
+    if (!node) continue;
+    removeNodeIds.push(node.id);
+    for (const e of current.edges) {
+      if (e.source === node.id || e.target === node.id)
+        removeEdgeIds.push(e.id);
+    }
+  }
+  for (const c of parsed.connect ?? []) {
+    const from = current.nodes.find((n) =>
+      n.data.label.toLowerCase().includes(String(c.from).toLowerCase())
+    );
+    const to = current.nodes.find((n) =>
+      n.data.label.toLowerCase().includes(String(c.to).toLowerCase())
+    );
+    if (from && to)
+      edges.push({ id: nextId("e"), source: from.id, target: to.id });
+  }
+
   return {
     reply: parsed.reply ?? "Done.",
     nodes: nodes.length ? nodes : undefined,
     edges: edges.length ? edges : undefined,
+    removeNodeIds: removeNodeIds.length ? removeNodeIds : undefined,
+    removeEdgeIds: removeEdgeIds.length ? removeEdgeIds : undefined,
   };
 }
 
 /** Local fallback agent — no keys required. */
 function runLocal(message: string, current: CanvasState): AgentResult {
   return interpretInstruction(message, current);
+}
+
+/**
+ * Kick off an AI agent run. When Trigger.dev is configured the job runs
+ * asynchronously (client should poll getAgentRunStatus); otherwise we run
+ * OpenAI (or the local fallback) inline and return the result immediately.
+ */
+export async function startAgentRun(
+  message: string,
+  current: CanvasState
+): Promise<{ runId: string } | { result: AgentResult }> {
+  if (process.env.TRIGGER_SECRET_KEY && process.env.TRIGGER_PROJECT_REF) {
+    try {
+      const { tasks } = await import("@trigger.dev/sdk/v3");
+      const handle = await tasks.trigger("ai-chat", { message, current });
+      return { runId: handle.id };
+    } catch {
+      // fall through to inline execution
+    }
+  }
+  return { result: await runAgent(message, current) };
+}
+
+export interface AgentRunStatus {
+  status: string;
+  progress?: string;
+  output?: AgentResult;
+  error?: string;
+}
+
+export async function getAgentRunStatus(
+  runId: string
+): Promise<AgentRunStatus> {
+  const { runs } = await import("@trigger.dev/sdk/v3");
+  const run = await runs.retrieve(runId);
+  const meta = (run as unknown as { metadata?: { progress?: string } })
+    .metadata;
+  return {
+    status: run.status,
+    progress: meta?.progress,
+    output:
+      run.status === "COMPLETED"
+        ? (run.output as AgentResult | undefined)
+        : undefined,
+    error:
+      run.status === "FAILED" || run.status === "CANCELED"
+        ? "AI job did not complete"
+        : undefined,
+  };
 }
 
 export async function runAgent(

@@ -12,6 +12,7 @@ export default function ChatSidebar({ projectId }: { projectId: string }) {
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
+  const [progress, setProgress] = useState<string | null>(null);
 
   useEffect(() => {
     fetch(`/api/projects/${projectId}/chat`)
@@ -33,16 +34,56 @@ export default function ChatSidebar({ projectId }: { projectId: string }) {
         body: JSON.stringify({ message: content }),
       });
       const data = await res.json();
-      if (data.message) {
-        setMessages((m) => [...m, data.message]);
-      }
-      if (data.patch) {
-        window.dispatchEvent(
-          new CustomEvent("canvas:patch", { detail: data.patch })
-        );
+      if (data.pending && data.runId) {
+        // Trigger.dev path: poll for progress and completion
+        let progress = "AI is working…";
+        const tick = async (): Promise<void> => {
+          const r = await fetch(
+            `/api/projects/${projectId}/chat/run/${data.runId}`
+          );
+          const s = await r.json();
+          if (s.progress) progress = s.progress;
+          setProgress(progress);
+          if (s.status === "COMPLETED") {
+            if (s.message) setMessages((m) => [...m, s.message]);
+            if (s.patch)
+              window.dispatchEvent(
+                new CustomEvent("canvas:patch", { detail: s.patch })
+              );
+            setProgress(null);
+            return;
+          }
+          if (s.error) {
+            setProgress(null);
+            setMessages((m) => [
+              ...m,
+              { id: `err-${Date.now()}`, role: "agent", content: s.error },
+            ]);
+            return;
+          }
+          await new Promise((r2) => setTimeout(r2, 1500));
+          return tick();
+        };
+        await tick();
+      } else {
+        if (data.message) {
+          setMessages((m) => [...m, data.message]);
+        }
+        if (data.patch) {
+          window.dispatchEvent(
+            new CustomEvent("canvas:patch", { detail: data.patch })
+          );
+        }
+        if (data.error) {
+          setMessages((m) => [
+            ...m,
+            { id: `err-${Date.now()}`, role: "agent", content: data.error },
+          ]);
+        }
       }
     } finally {
       setBusy(false);
+      setProgress(null);
     }
   };
 
@@ -61,7 +102,9 @@ export default function ChatSidebar({ projectId }: { projectId: string }) {
             <p>{m.content}</p>
           </div>
         ))}
-        {busy && <p className="text-xs text-gray-400">AI is working…</p>}
+        {busy && (
+          <p className="text-xs text-gray-400">{progress ?? "AI is working…"}</p>
+        )}
       </div>
       <div className="mt-2 flex gap-2">
         <input

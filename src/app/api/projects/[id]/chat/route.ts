@@ -2,9 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { getProjectAccess } from "@/lib/project-access";
 import { prisma } from "@/lib/prisma";
 import type { CanvasState } from "@/lib/canvas";
-import { runAgent } from "@/lib/ai-agent";
+import { runAgent, startAgentRun } from "@/lib/ai-agent";
+import { applyAgentResult } from "@/lib/apply-agent-result";
 
 type Params = { params: Promise<{ id: string }> };
+
+const AI_LIMIT_PER_MINUTE = 10;
 
 export async function GET(_req: NextRequest, { params }: Params) {
   const { id } = await params;
@@ -31,35 +34,37 @@ export async function POST(req: NextRequest, { params }: Params) {
   if (!message)
     return NextResponse.json({ error: "Message required" }, { status: 400 });
 
-  await prisma.chatMessage.create({
-    data: { projectId: id, role: "user", content: message },
+  // Rate limit AI operations per project
+  const since = new Date(Date.now() - 60_000);
+  const recent = await prisma.chatMessage.count({
+    where: { projectId: id, role: "agent", createdAt: { gte: since } },
   });
+  if (recent >= AI_LIMIT_PER_MINUTE) {
+    return NextResponse.json(
+      { error: "AI rate limit reached — try again in a minute." },
+      { status: 429 }
+    );
+  }
 
   const current = (access.project.canvasState as CanvasState | null) ?? {
     nodes: [],
     edges: [],
   };
 
-  // AI agent: OpenAI when configured (behind a Trigger.dev job when that is
-  // configured too), otherwise the local deterministic interpreter.
-  const result = await runAgent(message, current);
+  const started = await startAgentRun(message, current);
 
-  // Apply canvas mutations and persist (visible to everyone on reload)
-  const next: CanvasState = {
-    nodes: [...current.nodes, ...(result.nodes ?? [])],
-    edges: [...current.edges, ...(result.edges ?? [])],
-  };
-  await prisma.project.update({
-    where: { id },
-    data: { canvasState: next as object },
+  // Trigger.dev path: async — client polls /chat/run/[runId]
+  if ("runId" in started) {
+    await prisma.chatMessage.create({
+      data: { projectId: id, role: "user", content: message, runId: started.runId },
+    });
+    return NextResponse.json({ pending: true, runId: started.runId });
+  }
+
+  await prisma.chatMessage.create({
+    data: { projectId: id, role: "user", content: message },
   });
 
-  const saved = await prisma.chatMessage.create({
-    data: { projectId: id, role: "agent", content: result.reply },
-  });
-
-  return NextResponse.json({
-    message: saved,
-    patch: { nodes: result.nodes ?? [], edges: result.edges ?? [] },
-  });
+  const applied = await applyAgentResult(id, current, started.result);
+  return NextResponse.json(applied);
 }

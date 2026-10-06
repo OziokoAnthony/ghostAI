@@ -62,6 +62,8 @@ export interface AgentResult {
   reply: string;
   nodes?: CanvasNode[];
   edges?: CanvasEdge[];
+  removeNodeIds?: string[];
+  removeEdgeIds?: string[];
 }
 
 const ADD_RE =
@@ -128,6 +130,52 @@ export function interpretInstruction(
     };
   }
 
+  if (lower.includes("clear") || lower.includes("reset the canvas")) {
+    return {
+      reply: "Cleared the canvas.",
+      removeNodeIds: current.nodes.map((n) => n.id),
+      removeEdgeIds: current.edges.map((e) => e.id),
+    };
+  }
+
+  const remove = lower.match(/(?:remove|delete)(?: the)? (.+)/);
+  if (remove) {
+    const target = remove[1].trim().replace(/[.!?]+$/, "");
+    const node = current.nodes.find((n) =>
+      n.data.label.toLowerCase().includes(target)
+    );
+    if (!node) {
+      return { reply: `Could not find a component matching "${target}".` };
+    }
+    const removeEdgeIds = current.edges
+      .filter((e) => e.source === node.id || e.target === node.id)
+      .map((e) => e.id);
+    return {
+      reply: `Removed "${node.data.label}" and ${removeEdgeIds.length} connection(s).`,
+      removeNodeIds: [node.id],
+      removeEdgeIds,
+    };
+  }
+
+  const connect = message.match(/connect\s+(.+?)\s+to\s+(.+)/i);
+  if (connect) {
+    const fromLabel = connect[1].trim().toLowerCase();
+    const toLabel = connect[2].trim().replace(/[.!?]+$/, "").toLowerCase();
+    const from = current.nodes.find((n) =>
+      n.data.label.toLowerCase().includes(fromLabel)
+    );
+    const to = current.nodes.find((n) =>
+      n.data.label.toLowerCase().includes(toLabel)
+    );
+    if (!from || !to) {
+      return { reply: "Could not find both components to connect." };
+    }
+    return {
+      reply: `Connected "${from.data.label}" → "${to.data.label}".`,
+      edges: [{ id: nextId("e"), source: from.id, target: to.id }],
+    };
+  }
+
   if (
     lower.includes("what") ||
     lower.includes("explain") ||
@@ -145,7 +193,7 @@ export function interpretInstruction(
 
   return {
     reply:
-      'Try "generate a design", "add a cache", "add a postgres database", or "explain the current design".',
+      'Try "generate a design", "add a cache", "add a postgres database", "connect X to Y", "remove X", "clear", or "explain the current design".',
   };
 }
 

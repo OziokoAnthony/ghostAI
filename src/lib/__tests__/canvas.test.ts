@@ -39,6 +39,40 @@ describe("interpretInstruction", () => {
     expect(res.reply).toContain("1 components");
     expect(res.nodes).toBeUndefined();
   });
+
+  it("removes a node by label for 'remove X'", () => {
+    const cache = createNode("cache", "Redis Cache", { x: 0, y: 0 });
+    const api = createNode("service", "API", { x: 10, y: 10 });
+    const state: CanvasState = {
+      nodes: [cache, api],
+      edges: [{ id: "e1", source: api.id, target: cache.id }],
+    };
+    const res = interpretInstruction("remove redis", state);
+    expect(res.removeNodeIds).toEqual([cache.id]);
+    expect(res.removeEdgeIds).toEqual(["e1"]);
+  });
+
+  it("connects two nodes for 'connect X to Y'", () => {
+    const a = createNode("service", "API", { x: 0, y: 0 });
+    const b = createNode("database", "Postgres", { x: 10, y: 10 });
+    const res = interpretInstruction("connect API to Postgres", {
+      nodes: [a, b],
+      edges: [],
+    });
+    expect(res.edges).toHaveLength(1);
+    expect(res.edges![0].source).toBe(a.id);
+    expect(res.edges![0].target).toBe(b.id);
+  });
+
+  it("clears everything for 'clear'", () => {
+    const a = createNode("service", "API", { x: 0, y: 0 });
+    const res = interpretInstruction("clear", {
+      nodes: [a],
+      edges: [{ id: "e1", source: a.id, target: a.id }],
+    });
+    expect(res.removeNodeIds).toEqual([a.id]);
+    expect(res.removeEdgeIds).toEqual(["e1"]);
+  });
 });
 
 describe("countByKind", () => {

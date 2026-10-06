@@ -128,13 +128,33 @@ function Board({ projectId, initialState, readOnly, disableSave }: Props) {
       const detail = (e as CustomEvent).detail as {
         nodes?: unknown[];
         edges?: unknown[];
+        removeNodeIds?: string[];
+        removeEdgeIds?: string[];
       };
-      if (detail.nodes) {
+      const removeNodes = new Set(detail.removeNodeIds ?? []);
+      const removeEdges = new Set(detail.removeEdgeIds ?? []);
+      if (removeNodes.size || removeEdges.size) {
         history.current.push({
           nodes: nodes as any,
           edges: edges as any,
         });
-        if (detail.nodes.length) setNodes((nds) => nds.concat(detail.nodes as any[]));
+        if (removeNodes.size)
+          setNodes((nds) => nds.filter((n) => !removeNodes.has(n.id)));
+        setEdges((eds) =>
+          eds.filter(
+            (e) =>
+              !removeEdges.has(e.id) &&
+              !removeNodes.has(e.source) &&
+              !removeNodes.has(e.target)
+          )
+        );
+      }
+      if (detail.nodes?.length) {
+        history.current.push({
+          nodes: nodes as any,
+          edges: edges as any,
+        });
+        setNodes((nds) => nds.concat(detail.nodes as any[]));
       }
       if (detail.edges?.length)
         setEdges((eds) => eds.concat(detail.edges as any[]));
