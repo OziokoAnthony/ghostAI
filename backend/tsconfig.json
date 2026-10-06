@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["../frontend/src/*"]
+    }
+  },
+  "include": ["trigger", "trigger.config.ts", "../frontend/src/lib/ai-agent.ts", "../frontend/src/lib/canvas.ts"]
+}
