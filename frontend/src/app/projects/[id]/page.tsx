@@ -70,7 +70,7 @@ export default async function ProjectPage({ params }: Params) {
   return (
     <main className="min-h-screen p-8">
       <div className="mx-auto max-w-6xl">
-        <h1 className="text-2xl font-bold">{project.name}</h1>
+        <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">{project.name}</h1>
         {project.description && (
           <p className="mt-2 text-gray-600">{project.description}</p>
         )}

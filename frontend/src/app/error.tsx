@@ -17,7 +17,7 @@ export default function Error({
       </p>
       <button
         onClick={reset}
-        className="rounded border px-4 py-2 text-sm hover:bg-gray-50"
+        className="rounded border px-4 py-2 text-sm hover:bg-slate-50"
       >
         Try again
       </button>

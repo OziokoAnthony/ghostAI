@@ -77,7 +77,7 @@ export default function CollaboratorManager({
                 <select
                   value={c.role}
                   onChange={(e) => handleRoleChange(c.id, e.target.value)}
-                  className="rounded border px-2 py-1 text-sm"
+                  className="rounded-lg border border-slate-300 px-2 py-1 text-sm"
                 >
                   <option value="EDITOR">Editor</option>
                   <option value="VIEWER">Viewer</option>

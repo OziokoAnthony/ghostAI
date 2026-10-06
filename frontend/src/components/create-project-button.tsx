@@ -80,7 +80,7 @@ export default function CreateProjectButton() {
           <button
             type="button"
             onClick={() => setOpen(false)}
-            className="rounded border px-4 py-2 hover:bg-gray-50"
+            className="rounded border px-4 py-2 hover:bg-slate-50"
           >
             Cancel
           </button>

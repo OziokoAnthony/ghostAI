@@ -48,7 +48,7 @@ export default async function Dashboard() {
     <main className="min-h-screen p-8">
       <div className="mx-auto max-w-6xl">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Your Projects</h1>
+          <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">Your Projects</h1>
           <CreateProjectButton />
         </div>
         <ProjectList projects={projects} />

@@ -20,7 +20,7 @@ type Project = {
 export default function ProjectList({ projects }: { projects: Project[] }) {
   if (projects.length === 0) {
     return (
-      <div className="mt-8 rounded-lg border-2 border-dashed p-12 text-center text-gray-500">
+      <div className="mt-8 rounded-2xl border-2 border-dashed border-slate-300 bg-white/60 p-12 text-center text-slate-500">
         No projects yet. Create your first one.
       </div>
     );
@@ -32,15 +32,15 @@ export default function ProjectList({ projects }: { projects: Project[] }) {
         <Link
           key={project.id}
           href={`/projects/${project.id}`}
-          className="rounded-lg border p-4 transition hover:border-blue-500 hover:shadow-md"
+          className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-indigo-300 hover:shadow-md"
         >
-          <h3 className="font-semibold">{project.name}</h3>
+          <h3 className="font-semibold text-slate-900">{project.name}</h3>
           {project.description && (
-            <p className="mt-1 text-sm text-gray-600 line-clamp-2">
+            <p className="mt-1 text-sm text-slate-600 line-clamp-2">
               {project.description}
             </p>
           )}
-          <p className="mt-2 text-xs text-gray-400">
+          <p className="mt-3 text-xs text-slate-400">
             Updated {new Date(project.updatedAt).toLocaleDateString()}
           </p>
         </Link>

@@ -25,7 +25,7 @@ export default function ShareButton({ projectId }: { projectId: string }) {
     <div>
       <button
         onClick={share}
-        className="rounded border px-3 py-1 text-sm hover:bg-gray-50"
+        className="rounded-lg border border-slate-300 bg-white px-3 py-1 text-sm hover:bg-slate-50"
       >
         Share read-only link
       </button>

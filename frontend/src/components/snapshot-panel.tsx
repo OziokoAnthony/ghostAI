@@ -50,10 +50,10 @@ export default function SnapshotPanel({
   };
 
   return (
-    <div className="rounded-lg border p-4">
+    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
       <div className="mb-2 flex items-center justify-between">
         <h2 className="text-sm font-semibold">Snapshots</h2>
-        <button onClick={create} className="rounded border px-2 py-1 text-xs">
+        <button onClick={create} className="rounded-lg border border-slate-300 bg-white px-2 py-1 text-xs hover:bg-slate-50">
           Take snapshot
         </button>
       </div>

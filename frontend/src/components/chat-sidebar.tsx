@@ -90,13 +90,13 @@ export default function ChatSidebar({ projectId }: { projectId: string }) {
   };
 
   return (
-    <div className="flex h-[600px] flex-col rounded-lg border p-3">
+    <div className="flex h-[600px] flex-col rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
       <h2 className="mb-2 text-sm font-semibold">AI Agent Chat</h2>
       <div className="flex-1 space-y-2 overflow-y-auto text-sm">
         {messages.map((m) => (
           <div
             key={m.id}
-            className={`rounded p-2 ${m.role === "user" ? "bg-sky-50" : "bg-gray-100"}`}
+            className={`rounded p-2 ${m.role === "user" ? "bg-indigo-50" : "bg-gray-100"}`}
           >
             <span className="text-xs font-bold uppercase text-gray-500">
               {m.role}
@@ -110,7 +110,7 @@ export default function ChatSidebar({ projectId }: { projectId: string }) {
       </div>
       <div className="mt-2 flex gap-2">
         <input
-          className="flex-1 rounded border px-2 py-1 text-sm"
+          className="flex-1 rounded-lg border border-slate-300 px-2 py-1 text-sm"
           placeholder='e.g. "add a redis cache"'
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -119,7 +119,7 @@ export default function ChatSidebar({ projectId }: { projectId: string }) {
         <button
           onClick={send}
           disabled={busy}
-          className="rounded bg-black px-3 py-1 text-sm text-white disabled:opacity-50"
+          className="rounded-lg bg-indigo-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
         >
           Send
         </button>

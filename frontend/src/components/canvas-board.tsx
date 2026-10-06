@@ -253,13 +253,13 @@ function Board({ projectId, initialState, readOnly, disableSave }: Props) {
           </p>
           <button
             onClick={() => exportImage("png")}
-            className="rounded border px-2 py-1 text-xs hover:bg-gray-50"
+            className="rounded-lg border border-slate-300 bg-white px-2 py-1 text-xs hover:bg-slate-50 hover:bg-slate-50"
           >
             Export PNG
           </button>
           <button
             onClick={() => exportImage("svg")}
-            className="rounded border px-2 py-1 text-xs hover:bg-gray-50"
+            className="rounded-lg border border-slate-300 bg-white px-2 py-1 text-xs hover:bg-slate-50 hover:bg-slate-50"
           >
             Export SVG
           </button>
