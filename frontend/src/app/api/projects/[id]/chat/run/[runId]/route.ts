@@ -1,3 +1,5 @@
+// GET status+progress of a Trigger.dev AI run; persists the result once.
+
 import { NextRequest, NextResponse } from "next/server";
 import { getProjectAccess } from "@/lib/project-access";
 import { prisma } from "@/lib/prisma";

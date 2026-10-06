@@ -1,5 +1,7 @@
 "use client";
 
+// List snapshots + create + restore.
+
 import { useEffect, useState } from "react";
 
 interface Snap {

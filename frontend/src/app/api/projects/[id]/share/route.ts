@@ -1,3 +1,5 @@
+// POST create a share link, DELETE revoke it.
+
 import { NextRequest, NextResponse } from "next/server";
 import { getProjectAccess } from "@/lib/project-access";
 import { prisma } from "@/lib/prisma";

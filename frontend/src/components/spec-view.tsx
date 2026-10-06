@@ -1,5 +1,7 @@
 "use client";
 
+// Shows the generated spec with regenerate/copy/download.
+
 import { useEffect, useState } from "react";
 
 export default function SpecView({ projectId }: { projectId: string }) {

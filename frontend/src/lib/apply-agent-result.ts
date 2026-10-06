@@ -1,3 +1,5 @@
+// Applies an AgentResult (add/remove nodes/edges) to the stored canvas and saves the agent reply.
+
 import { prisma } from "@/lib/prisma";
 import type { CanvasState } from "@/lib/canvas";
 import type { runAgent } from "@/lib/ai-agent";

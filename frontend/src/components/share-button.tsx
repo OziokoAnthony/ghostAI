@@ -1,5 +1,7 @@
 "use client";
 
+// Creates/copies the read-only share link.
+
 import { useState } from "react";
 
 export default function ShareButton({ projectId }: { projectId: string }) {

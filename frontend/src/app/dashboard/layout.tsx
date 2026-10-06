@@ -1,3 +1,5 @@
+// Dashboard shell (header + frame).
+
 import Header from "@/components/header";
 
 export default function DashboardLayout({

@@ -1,5 +1,7 @@
 "use client";
 
+// Top nav bar.
+
 import { UserButton, useUser } from "@clerk/nextjs";
 import Link from "next/link";
 

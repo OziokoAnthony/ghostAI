@@ -1,3 +1,5 @@
+// PUT: autosave the whole canvas JSON.
+
 import { NextRequest, NextResponse } from "next/server";
 import { getProjectAccess } from "@/lib/project-access";
 import { prisma } from "@/lib/prisma";

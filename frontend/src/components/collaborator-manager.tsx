@@ -1,5 +1,7 @@
 "use client";
 
+// Invite/remove/change roles of collaborators.
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 

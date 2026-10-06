@@ -1,3 +1,5 @@
+// AI entry point: picks Trigger.dev / OpenAI / local fallback, runs the chat-to-canvas job.
+
 import {
   interpretInstruction,
   createNode,

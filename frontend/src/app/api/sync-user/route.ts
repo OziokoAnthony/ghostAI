@@ -1,3 +1,5 @@
+// POST sync the Clerk user into our DB.
+
 import { NextResponse } from "next/server";
 import { syncUser } from "@/lib/sync-user";
 

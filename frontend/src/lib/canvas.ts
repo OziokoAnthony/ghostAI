@@ -1,3 +1,5 @@
+// Canvas data model + the local "template AI" (interpretInstruction) + spec generator.
+
 // Pure canvas-state helpers shared by the canvas UI, chat agent, and spec generator.
 
 export type ShapeKind =

@@ -1,3 +1,5 @@
+// Clerk middleware: protects every route except sign-in/sign-up/share.
+
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
 const isPublicRoute = createRouteMatcher([

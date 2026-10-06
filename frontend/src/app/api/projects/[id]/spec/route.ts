@@ -1,3 +1,5 @@
+// GET the generated markdown spec for the current canvas.
+
 import { NextRequest, NextResponse } from "next/server";
 import { getProjectAccess } from "@/lib/project-access";
 import { generateSpec, type CanvasState } from "@/lib/canvas";

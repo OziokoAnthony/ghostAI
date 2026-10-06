@@ -1,5 +1,7 @@
 "use client";
 
+// The diagram canvas (React Flow): shapes, edges, undo/redo, autosave, PNG/SVG export.
+
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   ReactFlow,

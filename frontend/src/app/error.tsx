@@ -1,5 +1,7 @@
 "use client";
 
+// App-wide error boundary page.
+
 export default function Error({
   error,
   reset,

@@ -1,3 +1,5 @@
+// Permission gate for every project API route: auth + role check.
+
 import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
 

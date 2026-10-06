@@ -1,5 +1,7 @@
 "use client";
 
+// Chat UI: sends messages, polls Trigger.dev runs, pushes patches to the canvas.
+
 import { useEffect, useState } from "react";
 
 interface Msg {

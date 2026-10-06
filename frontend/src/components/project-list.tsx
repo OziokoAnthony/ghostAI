@@ -1,5 +1,7 @@
 "use client";
 
+// Grid of project cards linking to each workspace.
+
 import Link from "next/link";
 
 type Project = {

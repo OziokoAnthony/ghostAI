@@ -1,3 +1,5 @@
+// Public read-only view of a project via share token.
+
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import CanvasBoard from "@/components/canvas-board";

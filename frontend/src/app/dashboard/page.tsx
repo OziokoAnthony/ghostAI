@@ -1,3 +1,5 @@
+// Lists the signed-in user's projects.
+
 import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
 import { syncUser } from "@/lib/sync-user";

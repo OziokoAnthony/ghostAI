@@ -1,3 +1,5 @@
+// Copies the signed-in Clerk user into our own User table.
+
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
 

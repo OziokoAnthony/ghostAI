@@ -1,3 +1,5 @@
+// Landing page; redirects based on auth state.
+
 import { auth } from "@clerk/nextjs/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";

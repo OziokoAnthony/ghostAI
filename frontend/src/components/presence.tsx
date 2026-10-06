@@ -1,5 +1,7 @@
 "use client";
 
+// Live cursors/presence via Liveblocks (renders plain children when unconfigured).
+
 import { createClient } from "@liveblocks/client";
 import { createRoomContext } from "@liveblocks/react";
 import React, { useEffect, useState } from "react";

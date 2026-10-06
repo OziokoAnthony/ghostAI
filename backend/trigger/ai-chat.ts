@@ -1,3 +1,5 @@
+// Trigger.dev job: run the AI agent, publish progress metadata, local fallback.
+
 import { task, metadata } from "@trigger.dev/sdk/v3";
 import { runWithOpenAI } from "@/lib/ai-agent";
 import { interpretInstruction, type CanvasState } from "@/lib/canvas";

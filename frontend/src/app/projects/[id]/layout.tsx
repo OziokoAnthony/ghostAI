@@ -1,3 +1,5 @@
+// Project page shell.
+
 import Header from "@/components/header";
 
 export default function ProjectLayout({
