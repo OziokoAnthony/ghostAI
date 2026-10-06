@@ -1,0 +1,81 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String         @id @default(cuid())
+  clerkId       String         @unique
+  email         String         @unique
+  name          String?
+  imageUrl      String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  ownedProjects Project[]      @relation("ProjectOwner")
+  collaborations Collaborator[]
+}
+
+model Project {
+  id            String         @id @default(cuid())
+  name          String
+  description   String?
+  ownerId       String
+  owner         User           @relation("ProjectOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  collaborators Collaborator[]
+  canvasState   Json?
+  snapshots     Snapshot[]
+  messages      ChatMessage[]
+  shareToken    String?        @unique
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@index([ownerId])
+}
+
+model Snapshot {
+  id        String   @id @default(cuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  state     Json
+  label     String?
+  blobUrl   String?
+  createdBy String
+  createdAt DateTime @default(now())
+
+  @@index([projectId])
+}
+
+model ChatMessage {
+  id        String   @id @default(cuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  role      String
+  content   String
+  createdAt DateTime @default(now())
+
+  @@index([projectId])
+}
+
+model Collaborator {
+  id          String    @id @default(cuid())
+  projectId   String
+  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role        Role      @default(EDITOR)
+  createdAt   DateTime  @default(now())
+
+  @@unique([projectId, userId])
+  @@index([projectId])
+  @@index([userId])
+}
+
+enum Role {
+  OWNER
+  EDITOR
+  VIEWER
+}
