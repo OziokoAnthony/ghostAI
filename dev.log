@@ -1,0 +1,18 @@
+
+> system-design-workspace@0.1.0 dev
+> next dev
+
+   ▲ Next.js 15.5.26
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.2.28:3000
+   - Environments: .env.local, .env
+
+ ✓ Starting...
+ ✓ Ready in 8.7s
+ ○ Compiling /middleware ...
+ ✓ Compiled /middleware in 1689ms (222 modules)
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 10.1s (934 modules)
+ GET /login 404 in 11443ms
+ ✓ Compiled in 285ms (342 modules)
+ GET /signup 404 in 97ms
